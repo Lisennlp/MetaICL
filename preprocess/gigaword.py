@@ -17,16 +17,33 @@ class Gigaword(FewshotGymTextToTextDataset):
         self.task_type = "text to text"
         self.license = "unknown"
 
+    # def map_hf_dataset_to_list(self, hf_dataset, split_name):
+    #     lines = []
+    #     for datapoint in hf_dataset[split_name]:
+    #         input_text = datapoint["document"]
+    #         output_text = datapoint["summary"]
+    #         lines.append(("summarize: " + input_text, output_text))
+    #     return lines
+
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        for datapoint in hf_dataset[split_name]:
-            input_text = datapoint["document"]
-            output_text = datapoint["summary"]
-            lines.append(("summarize: " + input_text, output_text))
+        if split_name == 'train':
+            tgt_path = '/Users/lishengping/data/MetaICL_fail_data/ggw_data/train.tgt'
+            src_path = '/Users/lishengping/data/MetaICL_fail_data/ggw_data/train.src'
+        else:
+            src_path = '/Users/lishengping/data/MetaICL_fail_data/ggw_data/test.src'
+            tgt_path = '/Users/lishengping/data/MetaICL_fail_data/ggw_data/test.tgt'
+        with open(src_path, 'r') as src_f, open(tgt_path, 'r') as tgt_f:
+            src_lines = src_f.readlines()
+            tgt_lines = tgt_f.readlines()
+            assert len(src_lines) == len(tgt_lines)
+            for (src_line, tgt_line) in zip(src_lines, tgt_lines):
+                lines.append(("summarize: " + src_line.strip(), tgt_line.strip()))
         return lines
 
     def load_dataset(self):
-        return datasets.load_dataset('gigaword')
+        return ''
+        # return datasets.load_dataset('gigaword')
 
 def main():
     dataset = Gigaword()

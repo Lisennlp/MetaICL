@@ -41,20 +41,26 @@ class FinancialPhrasebank(FewshotGymClassificationDataset):
 
         return train_lines, test_lines
 
+    # def map_hf_dataset_to_list(self, hf_dataset, split_name):
+    #     lines = []
+    #     for datapoint in hf_dataset[split_name]:
+    #         # line[0]: input; line[1]: output
+    #         lines.append((datapoint["sentence"], self.label[datapoint["label"]]))
+    #     return lines
+
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        for datapoint in hf_dataset[split_name]:
-            # line[0]: input; line[1]: output
-            lines.append((datapoint["sentence"], self.label[datapoint["label"]]))
-            #lines.append(json.dumps(
-            #    "input": datapoint["sentence"],
-            #    "output": self.label[datapoint["label"]],
-            #    "choices": list(self.label.values())}))
-
+        abs_path = os.path.join(dhf_dataset, 'allAgree_utf8.txt')
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                label = line.split('@')[-1]
+                sent = line[:-len(label)]
+                lines.append((sent, label))
         return lines
 
     def load_dataset(self):
-        return datasets.load_dataset('financial_phrasebank', 'sentences_allagree')
+        return '/Users/lishengping/codes/others/MetaICL/data/fair_download_data/FinancialPhraseBank-v1.0'
+        # return datasets.load_dataset('financial_phrasebank', 'sentences_allagree')
 
 def main():
     dataset = FinancialPhrasebank()
