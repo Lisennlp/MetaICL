@@ -61,6 +61,7 @@ class FinancialPhrasebank(FewshotGymClassificationDataset):
     def load_dataset(self):
         return '/Users/lishengping/codes/others/MetaICL/data/fair_download_data/FinancialPhraseBank-v1.0'
         # return datasets.load_dataset('financial_phrasebank', 'sentences_allagree')
+        return lines
 
 def main():
     dataset = FinancialPhrasebank()
