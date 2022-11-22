@@ -40,8 +40,10 @@ class DBpedia14(FewshotGymClassificationDataset):
         if map_hf_dataset_to_list is None:
             map_hf_dataset_to_list = self.map_hf_dataset_to_list
 
-        train_lines = map_hf_dataset_to_list(dataset, "train")
-        test_lines = map_hf_dataset_to_list(dataset, "test")
+        # train_lines = map_hf_dataset_to_list(dataset, "train")
+        # test_lines = map_hf_dataset_to_list(dataset, "test")
+        train_lines = map_hf_dataset_to_list(dataset, "train.csv")
+        test_lines = map_hf_dataset_to_list(dataset, "test.csv")        
 
         np.random.seed(42)
         np.random.shuffle(test_lines)
@@ -51,20 +53,33 @@ class DBpedia14(FewshotGymClassificationDataset):
 
         return train_lines, test_lines
 
+    # def map_hf_dataset_to_list(self, hf_dataset, split_name):
+    #     lines = []
+    #     for datapoint in hf_dataset[split_name]:
+    #         # line[0]: input; line[1]: output
+    #         lines.append((datapoint["content"].replace("\t", " ").strip(), self.label[datapoint["label"]]))
+    #         '''lines.append(json.dumps({
+    #             "input": datapoint["content"].strip(),
+    #             "output": self.label[datapoint["label"]],
+    #             "choices": list(self.label.values())}))'''
+    #     return lines
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        for datapoint in hf_dataset[split_name]:
+        abs_path = os.path.join(hf_dataset, split_name)
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            for datapoint in f:
             # line[0]: input; line[1]: output
-            lines.append((datapoint["content"].replace("\t", " ").strip(), self.label[datapoint["label"]]))
-            '''lines.append(json.dumps({
-                "input": datapoint["content"].strip(),
-                "output": self.label[datapoint["label"]],
-                "choices": list(self.label.values())}))'''
-        return lines
+                datapoint  = datapoint.split(',')
+                lines.append((datapoint[2].replace("\t", " ").strip(), self.label[int(datapoint[0])-1]))
+                '''lines.append(json.dumps({
+                    "input": datapoint["content"].strip(),
+                    "output": self.label[datapoint["label"]],
+                    "choices": list(self.label.values())}))'''
+            return lines
 
     def load_dataset(self):
-        return datasets.load_dataset('dbpedia_14')
-
+        #return datasets.load_dataset('dbpedia_14')
+        return '/nas/wab/MetaICL/MetaICL_fail_data/dbpedia_csv'
 def main():
     dataset = DBpedia14()
 

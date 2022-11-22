@@ -50,7 +50,7 @@ class FinancialPhrasebank(FewshotGymClassificationDataset):
 
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        abs_path = os.path.join(dhf_dataset, 'allAgree_utf8.txt')
+        abs_path = os.path.join(hf_dataset, 'allAgree_utf8.txt')
         with open(abs_path, 'r', encoding='utf-8') as f:
             for line in f:
                 label = line.split('@')[-1]
@@ -59,7 +59,7 @@ class FinancialPhrasebank(FewshotGymClassificationDataset):
         return lines
 
     def load_dataset(self):
-        return '/Users/lishengping/codes/others/MetaICL/data/fair_download_data/FinancialPhraseBank-v1.0'
+        return '/nas/wab/MetaICL/MetaICL_fail_data/FinancialPhraseBank-v1.0'
         # return datasets.load_dataset('financial_phrasebank', 'sentences_allagree')
 
 def main():

@@ -51,8 +51,10 @@ class FewshotGymDataset():
         map_hf_dataset_to_list = self.get_map_hf_dataset_to_list()
         if map_hf_dataset_to_list is None:
             map_hf_dataset_to_list = self.map_hf_dataset_to_list
-        train_lines = map_hf_dataset_to_list(dataset, "train")
-        test_lines = map_hf_dataset_to_list(dataset, "validation")
+        #train_lines = map_hf_dataset_to_list(dataset, "train")
+        train_lines = map_hf_dataset_to_list(dataset, "dataset_train_B.json")
+        #test_lines = map_hf_dataset_to_list(dataset, "validation")
+        test_lines = map_hf_dataset_to_list(dataset, "dataset_val_B.json")
         return train_lines, test_lines
 
     def save(self, path, k, seed, k_shot_train, k_shot_dev, k_shot_test):

@@ -17,14 +17,22 @@ class Spider(FewshotGymTextToTextDataset):
         self.task_type = "text to text"
         self.license = "unknown"
 
+    # def map_hf_dataset_to_list(self, hf_dataset, split_name):
+    #     lines = []
+    #     for datapoint in hf_dataset[split_name]:
+    #         lines.append((datapoint["question"], datapoint["query"]))
+    #     return lines
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        for datapoint in hf_dataset[split_name]:
-            lines.append((datapoint["question"], datapoint["query"]))
-        return lines
+        abs_path = os.path.join(hf_dataset, split_name)
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            for datapoint in hf_dataset[split_name]:
+                lines.append((datapoint["question"], datapoint["query"]))
+                return lines
 
     def load_dataset(self):
-        return datasets.load_dataset("spider")
+        #return datasets.load_dataset("spider")
+        return '/nas/wab/MetaICL/MetaICL_fail_data/spider'
 
 def main():
     dataset = Spider()
