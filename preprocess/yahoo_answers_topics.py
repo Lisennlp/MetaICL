@@ -4,8 +4,9 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
+import csv
 import os
-import datasets
+#import datasets
 import numpy as np
 
 from fewshot_gym_dataset import FewshotGymDataset, FewshotGymClassificationDataset
@@ -36,22 +37,37 @@ class YahooAnswersTopics(FewshotGymClassificationDataset):
         if map_hf_dataset_to_list is None:
             map_hf_dataset_to_list = self.map_hf_dataset_to_list
 
-        train_lines = map_hf_dataset_to_list(dataset, "train")
-        test_lines = map_hf_dataset_to_list(dataset, "test")
+        train_lines = map_hf_dataset_to_list(dataset, "train.csv")
+        test_lines = map_hf_dataset_to_list(dataset, "test.csv")
 
         return train_lines, test_lines
 
+    # def map_hf_dataset_to_list(self, hf_dataset, split_name):
+    #     lines = []
+    #     for datapoint in hf_dataset[split_name]:
+    #         # line[0]: input; line[1]: output
+    #         input_text = "question_title: " + datapoint["question_title"] + " [SEP] question_content: " + datapoint["question_content"] + " [SEP] best_answer: " + datapoint["best_answer"]
+    #         lines.append((input_text.replace("\t", "").replace("\n", "").replace("\r", ""), self.label[datapoint["topic"]]))
+    #     return lines
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        for datapoint in hf_dataset[split_name]:
-            # line[0]: input; line[1]: output
-            input_text = "question_title: " + datapoint["question_title"] + " [SEP] question_content: " + datapoint["question_content"] + " [SEP] best_answer: " + datapoint["best_answer"]
-            lines.append((input_text.replace("\t", "").replace("\n", "").replace("\r", ""), self.label[datapoint["topic"]]))
+        abs_path = os.path.join(hf_dataset, split_name)
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            listReader =list(reader)
+            for datapoint in listReader:
+                # line[0]: input; line[1]: output
+                input_text = "question_title: " + datapoint[1] + " [SEP] question_content: " + datapoint[2] + " [SEP] best_answer: " + datapoint[3]
+                lines.append((input_text.replace("\t", "").replace("\n", "").replace("\r", ""), self.label[int(datapoint[0])-1]))
+                #lines.append(("title: " + datapoint[1] + " [SEP] content: " + datapoint[2], self.label[int(datapoint[0])-1]))
+            #lines.append(json.dumps({
+            #    "input": "title: " + datapoint["title"] + " content: " + datapoint["content"],
+            #    "output": self.label[datapoint["label"]],
+            #    "choices": list(self.labels.values())}))
         return lines
-
     def load_dataset(self):
-        return datasets.load_dataset('yahoo_answers_topics')
-
+        #return datasets.load_dataset('yahoo_answers_topics')
+        return '/nas/wab/MetaICL/MetaICL_fail_data/yahoo_answers_csv'
 def main():
     dataset = YahooAnswersTopics()
 

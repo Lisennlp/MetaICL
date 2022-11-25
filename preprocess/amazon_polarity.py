@@ -4,8 +4,9 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
+import csv
 import os
-import datasets
+#import datasets
 import json
 import numpy as np
 
@@ -29,7 +30,7 @@ class AmazonPolarity(FewshotGymClassificationDataset):
         if map_hf_dataset_to_list is None:
             map_hf_dataset_to_list = self.map_hf_dataset_to_list
 
-        lines = map_hf_dataset_to_list(dataset, "train")
+        lines = map_hf_dataset_to_list(dataset, "train.csv")
 
         np.random.seed(42)
         np.random.shuffle(lines)
@@ -41,13 +42,27 @@ class AmazonPolarity(FewshotGymClassificationDataset):
 
         return train_lines, test_lines
 
+    # def map_hf_dataset_to_list(self, hf_dataset, split_name):
+    #     lines = []
+    #     if split_name == "validation":
+    #         split_name = "test" # hg datasets only has train/test
+    #     for datapoint in hf_dataset[split_name]:
+    #         # line[0]: input; line[1]: output
+    #         lines.append(("title: " + datapoint["title"] + " [SEP] content: " + datapoint["content"], self.label[datapoint["label"]]))
+    #         #lines.append(json.dumps({
+    #         #    "input": "title: " + datapoint["title"] + " content: " + datapoint["content"],
+    #         #    "output": self.label[datapoint["label"]],
+    #         #    "choices": list(self.labels.values())}))
+    #     return lines
     def map_hf_dataset_to_list(self, hf_dataset, split_name):
         lines = []
-        if split_name == "validation":
-            split_name = "test" # hg datasets only has train/test
-        for datapoint in hf_dataset[split_name]:
-            # line[0]: input; line[1]: output
-            lines.append(("title: " + datapoint["title"] + " [SEP] content: " + datapoint["content"], self.label[datapoint["label"]]))
+        abs_path = os.path.join(hf_dataset, split_name)
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            listReader =list(reader)
+            for datapoint in listReader:
+                # line[0]: input; line[1]: output
+                lines.append(("title: " + datapoint[1] + " [SEP] content: " + datapoint[2], self.label[int(datapoint[0])-1]))
             #lines.append(json.dumps({
             #    "input": "title: " + datapoint["title"] + " content: " + datapoint["content"],
             #    "output": self.label[datapoint["label"]],
@@ -55,8 +70,8 @@ class AmazonPolarity(FewshotGymClassificationDataset):
         return lines
 
     def load_dataset(self):
-        return datasets.load_dataset('amazon_polarity')
-
+        #return datasets.load_dataset('amazon_polarity')
+        return "/nas/wab/MetaICL/MetaICL_fail_data/amazon_review_polarity_csv"
 def main():
     dataset = AmazonPolarity()
 
